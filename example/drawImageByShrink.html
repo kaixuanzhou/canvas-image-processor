@@ -15,7 +15,7 @@
     window.onload=function(){
         var canva = document.getElementById('CanvasProcessor');
         var canvasProcessorObj = new CanvasProcessor.Core(canva);
-        canvasProcessorObj.drawImage('images/Tulips.jpg',[0,0],function(){
+        canvasProcessorObj.drawImageByShrink('images/Tulips.jpg','contain',function(){
             console.log('draw image success');
         });
     }
