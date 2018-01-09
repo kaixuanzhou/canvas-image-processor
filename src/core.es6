@@ -2,6 +2,7 @@
  * Created by 80011690 on 2018/1/5.
  */
 import UtilClass from './util.es6';
+import ImageObject from './module/image/ImageObject.es6';
 import BaseService from './service/BaseService.es6';
 
 
@@ -15,6 +16,7 @@ export default class Core {
     ctx=null;//canvas context
     contentArea={};//内容区域、包括超出画布范围的内容
     serviceMap={};//服务map集合
+    zoom=1;//缩放比例
     //配置参数默认值
     defaultParams = {
     };
@@ -33,6 +35,14 @@ export default class Core {
             width:this.canvas.width,
             height:this.canvas.height
         }
+    }
+
+    /**
+     * 绘制图片对象
+     * @param imageObject
+     */
+    addImage(imageObject){
+        this.ctx.drawImage(imageObject.image,0,0,imageObject.image.width,imageObject.image.height,imageObject.position.x,imageObject.position.y,imageObject.size.width,imageObject.size.height);
     }
 
     /**
