@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>drawImage</title>
+</head>
+<style>
+ canvas{width: 100%}
+</style>
+<body>
+<canvas id="CanvasProcessor" width="600" height="600"></canvas>
+<ul>
+
+</ul>
+<input id="inputFile" type="file" onchange="selectFile(this)">
+<script src="../dist/bundle.js"></script>
+<script>
+    var canva,canvasProcessorObj;
+    window.onload=function(){
+        canva = document.getElementById('CanvasProcessor');
+        canvasProcessorObj = new CanvasProcessor.Processor(canva);
+    };
+
+    function selectFile(input){
+        readAsDataURL(input,function(path){
+            var im = new Image();
+            im.onload=function(){
+                var imageLayer = new CanvasProcessor.ImageLayer(im,{width:canva.width,height:canva.height});
+                canvasProcessorObj.addLayer(imageLayer);
+                canvasProcessorObj.render();
+            };
+            im.src=path;
+        })
+    }
+    function readAsDataURL(input,cb){
+        // 检查是否为图像类型
+        var simpleFile = input.files[0];
+        if(!/image\/\w+/.test(simpleFile.type)) {
+            alert("请确保文件类型为图像类型");
+            return false;
+        }
+        var reader = new FileReader();
+        // 将文件以Data URL形式进行读入页面
+        reader.readAsDataURL(simpleFile);
+        reader.onload = function(e){
+            cb&&cb(this.result);
+        }
+    }
+</script>
+</body>
+</html>

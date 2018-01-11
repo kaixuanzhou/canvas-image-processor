@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>drawImage</title>
+</head>
+<style>
+ canvas{width: 100%}
+</style>
+<body>
+<canvas id="CanvasProcessor" width="600" height="600"></canvas>
+<p>X位移<button onclick="move(-1,0)">-</button><button onclick="move(1,0)">+</button></p>
+<p>Y位移<button onclick="move(0,-1)">-</button><button onclick="move(0,1)">+</button></p>
+<ul>
+
+</ul>
+<script src="../dist/bundle.js"></script>
+<script>
+    var canva,canvasProcessorObj;
+    var imageLayer;
+    window.onload=function(){
+        canva = document.getElementById('CanvasProcessor');
+        canvasProcessorObj = new CanvasProcessor.Processor(canva);
+
+        var im = new Image();
+        im.onload=function(){
+            imageLayer = new CanvasProcessor.ImageLayer(im,{width:canva.width,height:canva.height});
+            canvasProcessorObj.addLayer(imageLayer);
+            canvasProcessorObj.render();
+        };
+        im.src='images/01.jpg';
+    };
+
+    function move(x,y){
+        if(imageLayer){
+            var imageTransform = new CanvasProcessor.ImageTransform(imageLayer);
+            imageTransform.move(x,y);
+            canvasProcessorObj.render();
+        }
+    }
+
+</script>
+</body>
+</html>

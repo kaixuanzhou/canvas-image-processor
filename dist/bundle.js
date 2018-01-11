@@ -61,11 +61,169 @@ window["CanvasProcessor"] =
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 1);
+/******/ 	return __webpack_require__(__webpack_require__.s = 3);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * Created by 80011690 on 2018/1/5.
+ */
+
+/**
+ * 图层
+ *
+ */
+var layerIdCount = 0;
+
+var Layer = function () {
+    //内容区域、包括超出画布范围的内容
+    //配置参数默认值
+
+
+    /**
+     * 宽高
+     * @param width
+     * @param height
+     */
+    function Layer(param) {
+        _classCallCheck(this, Layer);
+
+        this.canvas = null;
+        this.ctx = null;
+        this.contentArea = {};
+
+        var defaultParams = {
+            name: '',
+            width: 0,
+            height: 0
+        };
+        Object.assign(defaultParams, param);
+        this.canvas = document.createElement('canvas');
+
+        this.width = defaultParams.width;
+        this.height = defaultParams.height;
+        this.canvas.width = this.width;
+        this.canvas.height = this.height;
+        this.ctx = this.canvas.getContext('2d');
+        this.contentArea = {
+            x: 0,
+            y: 0,
+            width: this.canvas.width,
+            height: this.canvas.height
+        };
+        this.id = layerIdCount++;
+    }
+
+    /**
+     * 获取可视区域内的ImageData
+     */
+    //canvas context
+
+
+    _createClass(Layer, [{
+        key: 'getImageData',
+        value: function getImageData() {
+            return this.ctx.getImageData(0, 0, this.width, this.height);
+        }
+    }]);
+
+    return Layer;
+}();
+
+exports.default = Layer;
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var ImageObject = function () {
+    function ImageObject(image) {
+        _classCallCheck(this, ImageObject);
+
+        this.position = { x: 0, y: 0 };
+        this._tempPosition = { x: 0, y: 0 };
+        this.size = { width: 0, height: 0 };
+        this.ratio = { width: 1, height: 1 };
+        this.origin = { x: 0, y: 0 };
+
+        if (!image instanceof Image) return null;
+        this.image = image;
+        this.size.width = image.width;
+        this.size.height = image.height;
+    } //临时位置，用于处理缩放等功能时的基准位置，修改中心点时同步和position一致
+
+
+    _createClass(ImageObject, [{
+        key: "scaleTo",
+        value: function scaleTo(width, height) {
+            this.size.width = width;
+            this.size.height = height;
+            this.ratio = {
+                widthRatio: width / this.image.width, heightRatio: height / this.image.height
+            };
+            var _x = (this.origin.x - this._tempPosition.x) * this.ratio.widthRatio;
+            var _y = (this.origin.y - this._tempPosition.y) * this.ratio.heightRatio;
+            this.position.x = this.position.x - _x;
+            this.position.y = this.position.y - _y;
+        }
+    }, {
+        key: "scale",
+        value: function scale(widthRatio, heightRatio) {
+            this.size.width = this.image.width * widthRatio;
+            this.size.height = this.image.height * heightRatio;
+            this.ratio = {
+                widthRatio: widthRatio, heightRatio: heightRatio
+            };
+            var _x = (this.origin.x - this._tempPosition.x) * this.ratio.widthRatio;
+            var _y = (this.origin.y - this._tempPosition.y) * this.ratio.heightRatio;
+            this.position.x = this.position.x - _x;
+            this.position.y = this.position.y - _y;
+        }
+    }, {
+        key: "setOrigin",
+        value: function setOrigin(x, y) {
+            this._tempPosition = this.position;
+            this.origin = { x: x, y: y };
+        }
+    }, {
+        key: "setPosition",
+        value: function setPosition(x, y) {
+            this.position = { x: x, y: y };
+        }
+    }]);
+
+    return ImageObject;
+}();
+
+exports.default = ImageObject;
+
+/***/ }),
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -100,7 +258,7 @@ var BaseService = function () {
 exports.default = BaseService;
 
 /***/ }),
-/* 1 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -109,15 +267,29 @@ exports.default = BaseService;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Service = exports.Core = undefined;
+exports.ImageTransform = exports.ImageLayer = exports.Layer = exports.Processor = exports.ImageModule = exports.Service = exports.Core = undefined;
 
-var _core = __webpack_require__(2);
+var _core = __webpack_require__(4);
 
 var _core2 = _interopRequireDefault(_core);
 
-var _index = __webpack_require__(4);
+var _index = __webpack_require__(6);
 
 var _index2 = _interopRequireDefault(_index);
+
+var _index3 = __webpack_require__(9);
+
+var _index4 = _interopRequireDefault(_index3);
+
+var _processorCore = __webpack_require__(10);
+
+var _processorCore2 = _interopRequireDefault(_processorCore);
+
+var _index5 = __webpack_require__(11);
+
+var _ImageTransform = __webpack_require__(13);
+
+var _ImageTransform2 = _interopRequireDefault(_ImageTransform);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -130,9 +302,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  */
 exports.Core = _core2.default;
 exports.Service = _index2.default;
+exports.ImageModule = _index4.default;
+exports.Processor = _processorCore2.default;
+exports.Layer = _index5.Layer;
+exports.ImageLayer = _index5.ImageLayer;
+exports.ImageTransform = _ImageTransform2.default;
 
 /***/ }),
-/* 2 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -147,11 +324,15 @@ var _createClass = function () { function defineProperties(target, props) { for 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       */
 
 
-var _util = __webpack_require__(3);
+var _util = __webpack_require__(5);
 
 var _util2 = _interopRequireDefault(_util);
 
-var _BaseService = __webpack_require__(0);
+var _ImageObject = __webpack_require__(1);
+
+var _ImageObject2 = _interopRequireDefault(_ImageObject);
+
+var _BaseService = __webpack_require__(2);
 
 var _BaseService2 = _interopRequireDefault(_BaseService);
 
@@ -174,6 +355,8 @@ var Core = function () {
      * @param canvas  画布dom元素
      * @param params  配置参数
      */
+    //服务map集合
+    //canvas context
     function Core(canvas, params) {
         _classCallCheck(this, Core);
 
@@ -181,6 +364,7 @@ var Core = function () {
         this.ctx = null;
         this.contentArea = {};
         this.serviceMap = {};
+        this.zoom = 1;
         this.defaultParams = {};
 
         this.canvas = canvas;
@@ -194,16 +378,27 @@ var Core = function () {
     }
 
     /**
-     * 根据图片地址绘制图片
-     * @param path  路径
-     * @param ctxParamArr   ctx.drawImaged的其他参数
+     * 绘制图片对象
+     * @param imageObject
      */
-
+    //缩放比例
     //配置参数默认值
-    //canvas context
+    //内容区域、包括超出画布范围的内容
 
 
     _createClass(Core, [{
+        key: 'addImage',
+        value: function addImage(imageObject) {
+            this.ctx.drawImage(imageObject.image, 0, 0, imageObject.image.width, imageObject.image.height, imageObject.position.x, imageObject.position.y, imageObject.size.width, imageObject.size.height);
+        }
+
+        /**
+         * 根据图片地址绘制图片
+         * @param path  路径
+         * @param ctxParamArr   ctx.drawImaged的其他参数
+         */
+
+    }, {
         key: 'drawImage',
         value: function drawImage(path, ctxParamArr, cb) {
             var _this = this;
@@ -259,6 +454,20 @@ var Core = function () {
         }
 
         /**
+         * 缩放画布内容
+         * @param centerPoint  缩放中心点，默认画布中心
+         * @param size      缩放尺寸
+         */
+
+    }, {
+        key: 'zoom',
+        value: function zoom(centerPoint, size) {
+            var imageData = this.ctx.getImageData(0, 0, 100, 100);
+
+            var startFn = function startFn() {};
+        }
+
+        /**
          * 添加一个服务
          * @param serviceClass 服务类
          */
@@ -285,6 +494,7 @@ var Core = function () {
             if (serviceClass.prototype.__proto__.constructor === _BaseService2.default) {
                 if (!this.serviceMap[serviceClass.name]) return;
                 this.serviceMap[serviceClass.name].destroy();
+                delete this.serviceMap[serviceClass.name];
             }
         }
     }]);
@@ -295,7 +505,7 @@ var Core = function () {
 exports.default = Core;
 
 /***/ }),
-/* 3 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -464,7 +674,7 @@ var Util = function () {
 exports.default = Util;
 
 /***/ }),
-/* 4 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -474,7 +684,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _ZoomByGesture = __webpack_require__(5);
+var _ZoomByGesture = __webpack_require__(7);
 
 var _ZoomByGesture2 = _interopRequireDefault(_ZoomByGesture);
 
@@ -485,7 +695,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 5 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -497,11 +707,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _BaseService2 = __webpack_require__(0);
+var _BaseService2 = __webpack_require__(2);
 
 var _BaseService3 = _interopRequireDefault(_BaseService2);
 
-var _hammerjs = __webpack_require__(6);
+var _hammerjs = __webpack_require__(8);
 
 var _hammerjs2 = _interopRequireDefault(_hammerjs);
 
@@ -513,6 +723,9 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+/**
+ * 手势缩放画布内容
+ */
 var ZoomByGesture = function (_BaseService) {
     _inherits(ZoomByGesture, _BaseService);
 
@@ -550,7 +763,7 @@ var ZoomByGesture = function (_BaseService) {
 exports.default = ZoomByGesture;
 
 /***/ }),
-/* 6 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_RESULT__;/*! Hammer.JS - v2.0.7 - 2016-04-22
@@ -3198,6 +3411,269 @@ if (true) {
 
 })(window, document, 'Hammer');
 
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _ImageObject = __webpack_require__(1);
+
+var _ImageObject2 = _interopRequireDefault(_ImageObject);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = {
+    ImageObject: _ImageObject2.default
+};
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _Layer = __webpack_require__(0);
+
+var _Layer2 = _interopRequireDefault(_Layer);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Processor = function () {
+    //图层hash
+    function Processor(canvas) {
+        _classCallCheck(this, Processor);
+
+        this.layerList = [];
+        this.layerMap = {};
+
+        this.canvas = canvas;
+        this.ctx = this.canvas.getContext('2d');
+        this.width = this.canvas.width;
+        this.height = this.canvas.height;
+    }
+
+    /**
+     * 添加层
+     * @param layer
+     */
+    //图层顺序列表
+
+
+    _createClass(Processor, [{
+        key: 'addLayer',
+        value: function addLayer(layer) {
+            if (layer instanceof _Layer2.default && !this.layerMap[layer.id]) {
+                this.layerMap[layer.id] = layer;
+                this.layerList.push(layer);
+            }
+        }
+
+        /**
+         * 移除层
+         * @param id
+         */
+
+    }, {
+        key: 'removeLayer',
+        value: function removeLayer(id) {
+            delete this.layerMap[id];
+            var deleteIndex = this.layerList.indexOf(id);
+            this.layerList.splice(deleteIndex, 1);
+        }
+
+        /**
+         * 获取所有层
+         * @returns {Array}
+         */
+
+    }, {
+        key: 'getAllLayer',
+        value: function getAllLayer() {
+            return this.layerList;
+        }
+
+        /**
+         * 改变单个层的层叠顺序
+         * @param id
+         * @param value
+         */
+
+    }, {
+        key: 'sortLayer',
+        value: function sortLayer(id, value) {}
+
+        /**
+         * 渲染所有层
+         */
+
+    }, {
+        key: 'render',
+        value: function render() {
+            var _this = this;
+
+            this.ctx.clearRect(0, 0, this.width, this.height);
+            this.layerList.forEach(function (layer) {
+                _this.ctx.drawImage(layer.canvas, 0, 0);
+                // this.ctx.putImageData(layer.getImageData(),0,0);
+            });
+        }
+    }]);
+
+    return Processor;
+}();
+
+exports.default = Processor;
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.ImageLayer = exports.Layer = undefined;
+
+var _Layer = __webpack_require__(0);
+
+var _Layer2 = _interopRequireDefault(_Layer);
+
+var _ImageLayer = __webpack_require__(12);
+
+var _ImageLayer2 = _interopRequireDefault(_ImageLayer);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.Layer = _Layer2.default;
+exports.ImageLayer = _ImageLayer2.default;
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _Layer2 = __webpack_require__(0);
+
+var _Layer3 = _interopRequireDefault(_Layer2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var ImageLayer = function (_Layer) {
+    _inherits(ImageLayer, _Layer);
+
+    function ImageLayer(image) {
+        var _ref;
+
+        _classCallCheck(this, ImageLayer);
+
+        for (var _len = arguments.length, param = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+            param[_key - 1] = arguments[_key];
+        }
+
+        var _this = _possibleConstructorReturn(this, (_ref = ImageLayer.__proto__ || Object.getPrototypeOf(ImageLayer)).call.apply(_ref, [this].concat(param)));
+
+        _this.image = image;
+        _this.imageWidth = _this.image.width;
+        _this.imageHeight = _this.image.height;
+        _this.imageX = 0;
+        _this.imageY = 0;
+        _this.update();
+        return _this;
+    }
+
+    _createClass(ImageLayer, [{
+        key: 'update',
+        value: function update() {
+            this.ctx.clearRect(0, 0, this.width, this.height);
+            this.ctx.drawImage(this.image, this.imageX, this.imageY, this.imageWidth, this.imageHeight);
+        }
+    }]);
+
+    return ImageLayer;
+}(_Layer3.default);
+
+exports.default = ImageLayer;
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * 图形变形
+ */
+var ImageTransform = function () {
+    function ImageTransform(imageLayer) {
+        _classCallCheck(this, ImageTransform);
+
+        this.imageLayer = imageLayer;
+    }
+
+    _createClass(ImageTransform, [{
+        key: "move",
+        value: function move(x, y) {
+            this.imageLayer.imageX = this.imageLayer.imageX + x;
+            this.imageLayer.imageY = this.imageLayer.imageY + y;
+            this.imageLayer.update();
+        }
+    }, {
+        key: "scaleTo",
+        value: function scaleTo(width, height) {
+            this.imageLayer.imageWidth = width;
+            this.imageLayer.imageHeight = height;
+            this.imageLayer.update();
+        }
+    }, {
+        key: "rotate",
+        value: function rotate() {}
+    }]);
+
+    return ImageTransform;
+}();
+
+exports.default = ImageTransform;
 
 /***/ })
 /******/ ]);
