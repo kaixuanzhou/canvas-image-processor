@@ -61,7 +61,7 @@ window["CanvasProcessor"] =
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 3);
+/******/ 	return __webpack_require__(__webpack_require__.s = 1);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -154,140 +154,21 @@ exports.default = Layer;
 
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var ImageObject = function () {
-    function ImageObject(image) {
-        _classCallCheck(this, ImageObject);
-
-        this.position = { x: 0, y: 0 };
-        this._tempPosition = { x: 0, y: 0 };
-        this.size = { width: 0, height: 0 };
-        this.ratio = { width: 1, height: 1 };
-        this.origin = { x: 0, y: 0 };
-
-        if (!image instanceof Image) return null;
-        this.image = image;
-        this.size.width = image.width;
-        this.size.height = image.height;
-    } //临时位置，用于处理缩放等功能时的基准位置，修改中心点时同步和position一致
-
-
-    _createClass(ImageObject, [{
-        key: "scaleTo",
-        value: function scaleTo(width, height) {
-            this.size.width = width;
-            this.size.height = height;
-            this.ratio = {
-                widthRatio: width / this.image.width, heightRatio: height / this.image.height
-            };
-            var _x = (this.origin.x - this._tempPosition.x) * this.ratio.widthRatio;
-            var _y = (this.origin.y - this._tempPosition.y) * this.ratio.heightRatio;
-            this.position.x = this.position.x - _x;
-            this.position.y = this.position.y - _y;
-        }
-    }, {
-        key: "scale",
-        value: function scale(widthRatio, heightRatio) {
-            this.size.width = this.image.width * widthRatio;
-            this.size.height = this.image.height * heightRatio;
-            this.ratio = {
-                widthRatio: widthRatio, heightRatio: heightRatio
-            };
-            var _x = (this.origin.x - this._tempPosition.x) * this.ratio.widthRatio;
-            var _y = (this.origin.y - this._tempPosition.y) * this.ratio.heightRatio;
-            this.position.x = this.position.x - _x;
-            this.position.y = this.position.y - _y;
-        }
-    }, {
-        key: "setOrigin",
-        value: function setOrigin(x, y) {
-            this._tempPosition = this.position;
-            this.origin = { x: x, y: y };
-        }
-    }, {
-        key: "setPosition",
-        value: function setPosition(x, y) {
-            this.position = { x: x, y: y };
-        }
-    }]);
-
-    return ImageObject;
-}();
-
-exports.default = ImageObject;
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var BaseService = function () {
-    function BaseService(core) {
-        _classCallCheck(this, BaseService);
-
-        this.core = core;
-    }
-
-    _createClass(BaseService, [{
-        key: "init",
-        value: function init() {}
-    }, {
-        key: "destroy",
-        value: function destroy() {}
-    }]);
-
-    return BaseService;
-}();
-
-exports.default = BaseService;
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.ImageTransform = exports.ImageLayer = exports.Layer = exports.Processor = exports.ImageModule = exports.Service = exports.Core = undefined;
+exports.ImageTransform = exports.ImageLayer = exports.Layer = exports.Processor = exports.Service = undefined;
 
-var _core = __webpack_require__(4);
-
-var _core2 = _interopRequireDefault(_core);
-
-var _index = __webpack_require__(6);
+var _index = __webpack_require__(2);
 
 var _index2 = _interopRequireDefault(_index);
 
-var _index3 = __webpack_require__(9);
-
-var _index4 = _interopRequireDefault(_index3);
-
-var _processorCore = __webpack_require__(10);
+var _processorCore = __webpack_require__(6);
 
 var _processorCore2 = _interopRequireDefault(_processorCore);
 
-var _index5 = __webpack_require__(11);
+var _index3 = __webpack_require__(7);
 
-var _ImageTransform = __webpack_require__(13);
+var _ImageTransform = __webpack_require__(9);
 
 var _ImageTransform2 = _interopRequireDefault(_ImageTransform);
 
@@ -300,16 +181,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /**
  * Created by 80011690 on 2018/1/5.
  */
-exports.Core = _core2.default;
 exports.Service = _index2.default;
-exports.ImageModule = _index4.default;
 exports.Processor = _processorCore2.default;
-exports.Layer = _index5.Layer;
-exports.ImageLayer = _index5.ImageLayer;
+exports.Layer = _index3.Layer;
+exports.ImageLayer = _index3.ImageLayer;
 exports.ImageTransform = _ImageTransform2.default;
 
 /***/ }),
-/* 4 */
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -319,372 +198,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /**
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * Created by 80011690 on 2018/1/5.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      */
-
-
-var _util = __webpack_require__(5);
-
-var _util2 = _interopRequireDefault(_util);
-
-var _ImageObject = __webpack_require__(1);
-
-var _ImageObject2 = _interopRequireDefault(_ImageObject);
-
-var _BaseService = __webpack_require__(2);
-
-var _BaseService2 = _interopRequireDefault(_BaseService);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Util = new _util2.default();
-/**
- * 核心代码
- *
- */
-
-var Core = function () {
-
-    /**
-     *
-     * @param canvas  画布dom元素
-     * @param params  配置参数
-     */
-    //服务map集合
-    //canvas context
-    function Core(canvas, params) {
-        _classCallCheck(this, Core);
-
-        this.canvas = null;
-        this.ctx = null;
-        this.contentArea = {};
-        this.serviceMap = {};
-        this.zoom = 1;
-        this.defaultParams = {};
-
-        this.canvas = canvas;
-        this.ctx = this.canvas.getContext('2d');
-        this.contentArea = {
-            x: 0,
-            y: 0,
-            width: this.canvas.width,
-            height: this.canvas.height
-        };
-    }
-
-    /**
-     * 绘制图片对象
-     * @param imageObject
-     */
-    //缩放比例
-    //配置参数默认值
-    //内容区域、包括超出画布范围的内容
-
-
-    _createClass(Core, [{
-        key: 'addImage',
-        value: function addImage(imageObject) {
-            this.ctx.drawImage(imageObject.image, 0, 0, imageObject.image.width, imageObject.image.height, imageObject.position.x, imageObject.position.y, imageObject.size.width, imageObject.size.height);
-        }
-
-        /**
-         * 根据图片地址绘制图片
-         * @param path  路径
-         * @param ctxParamArr   ctx.drawImaged的其他参数
-         */
-
-    }, {
-        key: 'drawImage',
-        value: function drawImage(path, ctxParamArr, cb) {
-            var _this = this;
-
-            Util.loadImage(path, function (imgobj) {
-                var _ctx;
-
-                (_ctx = _this.ctx).drawImage.apply(_ctx, [imgobj].concat(_toConsumableArray(ctxParamArr)));
-                cb && typeof cb === 'function' && cb();
-            });
-        }
-
-        /**
-         * 缩放图片到合适大小
-         * @param path 路径
-         * @param type 处理方式 Contain 尽量在容器内最大化  cover 完全覆盖容器的最小尺寸
-         */
-
-    }, {
-        key: 'drawImageByShrink',
-        value: function drawImageByShrink(path, type, cb) {
-            var _this2 = this;
-
-            Util.loadImage(path, function (imgobj) {
-                var shrinkSize = { x: 0, y: 0 };
-                if (type === 'contain') {
-                    shrinkSize = Util.getContainSize(imgobj.width, imgobj.height, _this2.canvas.width, _this2.canvas.height);
-                } else {
-                    shrinkSize = Util.getCoverSize(imgobj.width, imgobj.height, _this2.canvas.width, _this2.canvas.height);
-                }
-                var shrinkPosition = Util.getCenterPosition(shrinkSize.width, shrinkSize.height, _this2.canvas.width, _this2.canvas.height);
-                _this2.ctx.drawImage(imgobj, 0, 0, imgobj.width, imgobj.height, shrinkPosition.x, shrinkPosition.y, shrinkSize.width, shrinkSize.height);
-                cb && typeof cb === 'function' && cb();
-            });
-        }
-
-        /**
-         * 去色
-         * @param range 处理范围  {x,y,width,height}   为空时默认画布可视区域
-         */
-
-    }, {
-        key: 'desaturate',
-        value: function desaturate(range) {
-            var _range = this.contentArea;
-            if (range && range.x && range.y && range.width && range.height) {
-                _range = range;
-            }
-            var imageData = this.ctx.getImageData(_range.x, _range.y, _range.width, _range.height);
-            this.ctx.clearRect(_range.x, _range.y, _range.width, _range.height);
-            var greyData = Util.imageToGrey(imageData);
-            this.ctx.putImageData(greyData, _range.x, _range.y);
-        }
-
-        /**
-         * 缩放画布内容
-         * @param centerPoint  缩放中心点，默认画布中心
-         * @param size      缩放尺寸
-         */
-
-    }, {
-        key: 'zoom',
-        value: function zoom(centerPoint, size) {
-            var imageData = this.ctx.getImageData(0, 0, 100, 100);
-
-            var startFn = function startFn() {};
-        }
-
-        /**
-         * 添加一个服务
-         * @param serviceClass 服务类
-         */
-
-    }, {
-        key: 'addService',
-        value: function addService(serviceClass) {
-            if (serviceClass.prototype.__proto__.constructor === _BaseService2.default) {
-                if (this.serviceMap[serviceClass.name]) return;
-                var serive = new serviceClass(this);
-                serive.init();
-                this.serviceMap[serviceClass.name] = serive;
-            }
-        }
-
-        /**
-         * 添加一个服务
-         * @param serviceClass 服务类
-         */
-
-    }, {
-        key: 'removeService',
-        value: function removeService(serviceClass) {
-            if (serviceClass.prototype.__proto__.constructor === _BaseService2.default) {
-                if (!this.serviceMap[serviceClass.name]) return;
-                this.serviceMap[serviceClass.name].destroy();
-                delete this.serviceMap[serviceClass.name];
-            }
-        }
-    }]);
-
-    return Core;
-}();
-
-exports.default = Core;
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
- * Created by 80011690 on 2018/1/6.
- */
-var Util = function () {
-    function Util() {
-        _classCallCheck(this, Util);
-
-        this.instance = null;
-
-        if (this.instance) {
-            return this.instance;
-        } else {
-            this.instance = this;
-            return this;
-        }
-    }
-
-    /**
-     * 加载图片
-     * @param path  路径
-     * @param succCb  成功回调
-     * @param errorCb  失败回调
-     */
-
-
-    _createClass(Util, [{
-        key: 'loadImage',
-        value: function loadImage(path, succCb, errorCb) {
-            var imgobj = new Image();
-            imgobj.onload = function () {
-                succCb && typeof succCb === 'function' && succCb(imgobj);
-            };
-            imgobj.onerror = function () {
-                errorCb && typeof errorCb === 'function' && errorCb(imgobj);
-            };
-            imgobj.src = path;
-        }
-
-        /**
-         * 计算图片在容器里铺满的最小尺寸
-         * @param yw  图片宽度
-         * @param yh  图片高度
-         * @param cw  容器宽度
-         * @param ch  容器高度
-         * @return {width,height,bl}  宽  高  比例
-         */
-
-    }, {
-        key: 'minSize',
-        value: function minSize(yw, yh, cw, ch) {
-            var bl = 1;
-            if (yw > yh) {
-                bl = cw / yw;
-            } else {
-                bl = ch / yh;
-            }
-            return {
-                width: yw * bl,
-                height: yh * bl,
-                bl: bl
-            };
-        }
-
-        /**
-         * 计算矩形在容器中居中时的位置
-         * @param w 矩形宽
-         * @param h 矩形高
-         * @param cw 容器宽
-         * @param ch 容器高
-         */
-
-    }, {
-        key: 'getCenterPosition',
-        value: function getCenterPosition(w, h, cw, ch) {
-            return {
-                x: (cw - w) / 2,
-                y: (ch - h) / 2
-            };
-        }
-
-        /**
-         * 计算图片缩放到容器大小时的尺寸
-         * @param ysw    图片宽度
-         * @param ysh    图片高度
-         * @param w      容器宽度
-         * @param h      容器高度
-         * @returns {{width: number, height: number, bl: number}}   {宽，高，缩放比例}
-         */
-
-    }, {
-        key: 'getContainSize',
-        value: function getContainSize(ysw, ysh, w, h) {
-            var bl = 1;
-            if (ysw > ysh) {
-                bl = w / ysw;
-            } else {
-                bl = h / ysh;
-            }
-            return {
-                width: ysw * bl,
-                height: ysh * bl,
-                bl: bl
-            };
-        }
-
-        /**
-         * 计算图片缩放到容器大小时的尺寸
-         * @param ysw    图片宽度
-         * @param ysh    图片高度
-         * @param w      容器宽度
-         * @param h      容器高度
-         * @returns {{width: number, height: number, bl: number}}   {宽，高，缩放比例}
-         */
-
-    }, {
-        key: 'getCoverSize',
-        value: function getCoverSize(ysw, ysh, w, h) {
-            var bl = 1;
-            if (ysw < ysh) {
-                bl = w / ysw;
-            } else {
-                bl = h / ysh;
-            }
-            return {
-                width: ysw * bl,
-                height: ysh * bl,
-                bl: bl
-            };
-        }
-    }, {
-        key: 'imageToGrey',
-        value: function imageToGrey(imageData) {
-            var c = imageData;
-            for (var i = 0; i < c.height; ++i) {
-                for (var j = 0; j < c.width; ++j) {
-                    var x = i * 4 * c.width + 4 * j,
-                        //imagedata读取的像素数据存储在data属性里，是从上到下，从左到右的，每个像素需要占用4位数据，分别是r,g,b,alpha透明通道
-                    r = c.data[x],
-                        g = c.data[x + 1],
-                        b = c.data[x + 2];
-                    c.data[x + 3] = 150; //透明度设置为150,0表示完全透明
-                    var gray = r * 0.299 + g * 0.587 + b * 0.114;
-                    c.data[x] = c.data[x + 1] = c.data[x + 2] = gray;
-                }
-            }
-            return imageData;
-        }
-    }]);
-
-    return Util;
-}();
-
-exports.default = Util;
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _ZoomByGesture = __webpack_require__(7);
+var _ZoomByGesture = __webpack_require__(3);
 
 var _ZoomByGesture2 = _interopRequireDefault(_ZoomByGesture);
 
@@ -695,7 +209,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 7 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -707,11 +221,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _BaseService2 = __webpack_require__(2);
+var _BaseService2 = __webpack_require__(4);
 
 var _BaseService3 = _interopRequireDefault(_BaseService2);
 
-var _hammerjs = __webpack_require__(8);
+var _hammerjs = __webpack_require__(5);
 
 var _hammerjs2 = _interopRequireDefault(_hammerjs);
 
@@ -763,7 +277,42 @@ var ZoomByGesture = function (_BaseService) {
 exports.default = ZoomByGesture;
 
 /***/ }),
-/* 8 */
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var BaseService = function () {
+    function BaseService(core) {
+        _classCallCheck(this, BaseService);
+
+        this.core = core;
+    }
+
+    _createClass(BaseService, [{
+        key: "init",
+        value: function init() {}
+    }, {
+        key: "destroy",
+        value: function destroy() {}
+    }]);
+
+    return BaseService;
+}();
+
+exports.default = BaseService;
+
+/***/ }),
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_RESULT__;/*! Hammer.JS - v2.0.7 - 2016-04-22
@@ -3413,28 +2962,7 @@ if (true) {
 
 
 /***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _ImageObject = __webpack_require__(1);
-
-var _ImageObject2 = _interopRequireDefault(_ImageObject);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.default = {
-    ImageObject: _ImageObject2.default
-};
-
-/***/ }),
-/* 10 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3456,16 +2984,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var Processor = function () {
     //图层hash
-    function Processor(canvas) {
+    function Processor(dom, args) {
         _classCallCheck(this, Processor);
 
         this.layerList = [];
         this.layerMap = {};
 
-        this.canvas = canvas;
-        this.ctx = this.canvas.getContext('2d');
-        this.width = this.canvas.width;
-        this.height = this.canvas.height;
+        var defaultParams = {
+            width: 0,
+            height: 0
+        };
+        var _args = Object.assign(defaultParams, args);
+        this.container = dom;
+        this.width = _args.width;
+        this.height = _args.height;
     }
 
     /**
@@ -3480,7 +3012,9 @@ var Processor = function () {
         value: function addLayer(layer) {
             if (layer instanceof _Layer2.default && !this.layerMap[layer.id]) {
                 this.layerMap[layer.id] = layer;
-                this.layerList.push(layer);
+                this.layerList.push(layer.id);
+                layer.canvas.style.zIndex = this.layerList.length;
+                this.container.appendChild(layer.canvas);
             }
         }
 
@@ -3494,7 +3028,8 @@ var Processor = function () {
         value: function removeLayer(id) {
             delete this.layerMap[id];
             var deleteIndex = this.layerList.indexOf(id);
-            this.layerList.splice(deleteIndex, 1);
+            var layer = this.layerList.splice(deleteIndex, 1);
+            this.container.removeChild(layer.canvas);
         }
 
         /**
@@ -3505,7 +3040,11 @@ var Processor = function () {
     }, {
         key: 'getAllLayer',
         value: function getAllLayer() {
-            return this.layerList;
+            var _this = this;
+
+            return this.layerList.map(function (id) {
+                return _this.layerMap[id];
+            });
         }
 
         /**
@@ -3525,13 +3064,11 @@ var Processor = function () {
     }, {
         key: 'render',
         value: function render() {
-            var _this = this;
-
-            this.ctx.clearRect(0, 0, this.width, this.height);
-            this.layerList.forEach(function (layer) {
-                _this.ctx.drawImage(layer.canvas, 0, 0);
-                // this.ctx.putImageData(layer.getImageData(),0,0);
-            });
+            // this.ctx.clearRect(0,0,this.width,this.height);
+            // this.layerList.forEach((layer)=>{
+            //     this.ctx.drawImage(layer.canvas,0,0);
+            //     // this.ctx.putImageData(layer.getImageData(),0,0);
+            // })
         }
     }]);
 
@@ -3541,7 +3078,7 @@ var Processor = function () {
 exports.default = Processor;
 
 /***/ }),
-/* 11 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3556,7 +3093,7 @@ var _Layer = __webpack_require__(0);
 
 var _Layer2 = _interopRequireDefault(_Layer);
 
-var _ImageLayer = __webpack_require__(12);
+var _ImageLayer = __webpack_require__(8);
 
 var _ImageLayer2 = _interopRequireDefault(_ImageLayer);
 
@@ -3566,7 +3103,7 @@ exports.Layer = _Layer2.default;
 exports.ImageLayer = _ImageLayer2.default;
 
 /***/ }),
-/* 12 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3627,7 +3164,7 @@ var ImageLayer = function (_Layer) {
 exports.default = ImageLayer;
 
 /***/ }),
-/* 13 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3665,9 +3202,44 @@ var ImageTransform = function () {
             this.imageLayer.imageHeight = height;
             this.imageLayer.update();
         }
+
+        /**
+         * 以图片中某点的位置为基准进行缩放
+         */
+
+    }, {
+        key: "scaleToByPoint",
+        value: function scaleToByPoint(width, height, x, y) {
+            var diffWidth = this.imageLayer.imageWidth - width;
+            var diffHeight = this.imageLayer.imageHeight - height;
+            var _x = diffWidth * x / this.imageLayer.imageWidth;
+            var _y = diffHeight * y / this.imageLayer.imageHeight;
+            this.imageLayer.imageWidth = width;
+            this.imageLayer.imageHeight = height;
+            this.imageLayer.imageX = this.imageLayer.imageX + _x;
+            this.imageLayer.imageY = this.imageLayer.imageY + _y;
+            this.imageLayer.update();
+        }
+
+        /**
+         * 以图层中的某点的位置为基准进行缩放
+         * @param width
+         * @param height
+         * @param x
+         * @param y
+         */
+
+    }, {
+        key: "scaleToByLayerPoint",
+        value: function scaleToByLayerPoint(width, height, x, y) {
+            this.scaleToByPoint(width, height, x - this.imageLayer.imageX, y - this.imageLayer.imageY);
+        }
     }, {
         key: "rotate",
         value: function rotate() {}
+    }, {
+        key: "commit",
+        value: function commit() {}
     }]);
 
     return ImageTransform;

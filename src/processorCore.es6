@@ -1,17 +1,20 @@
 import Layer from './module/layer/Layer.es6'
 
 export default class Processor{
-    canvas;
-    ctx;
+    container;
     width;
     height;
     layerList=[];//图层顺序列表
     layerMap={};//图层hash
-    constructor(canvas){
-        this.canvas = canvas;
-        this.ctx=this.canvas.getContext('2d');
-        this.width=this.canvas.width;
-        this.height=this.canvas.height;
+    constructor(dom,args){
+        let defaultParams = {
+            width:0,
+            height:0,
+        };
+        let _args = Object.assign(defaultParams,args);
+        this.container = dom;
+        this.width=_args.width;
+        this.height=_args.height;
     }
 
     /**
@@ -22,6 +25,8 @@ export default class Processor{
         if(layer instanceof Layer && !this.layerMap[layer.id]){
             this.layerMap[layer.id]=layer;
             this.layerList.push(layer.id);
+            layer.canvas.style.zIndex = this.layerList.length;
+            this.container.appendChild(layer.canvas);
         }
     }
 
@@ -32,7 +37,8 @@ export default class Processor{
     removeLayer(id){
         delete this.layerMap[id];
         let deleteIndex = this.layerList.indexOf(id);
-        this.layerList.splice(deleteIndex,1);
+        let layer = this.layerList.splice(deleteIndex,1);
+        this.container.removeChild(layer.canvas);
     }
 
     /**
@@ -58,10 +64,10 @@ export default class Processor{
      * 渲染所有层
      */
     render(){
-        this.ctx.clearRect(0,0,this.width,this.height);
-        this.layerList.forEach((layer)=>{
-            this.ctx.drawImage(layer.canvas,0,0);
-            // this.ctx.putImageData(layer.getImageData(),0,0);
-        })
+        // this.ctx.clearRect(0,0,this.width,this.height);
+        // this.layerList.forEach((layer)=>{
+        //     this.ctx.drawImage(layer.canvas,0,0);
+        //     // this.ctx.putImageData(layer.getImageData(),0,0);
+        // })
     }
 }

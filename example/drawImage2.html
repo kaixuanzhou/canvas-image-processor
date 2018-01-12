@@ -3,32 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <title>drawImage</title>
 </head>
 <style>
  canvas{width: 100%}
+ .processor-out{
+     position: relative;
+     padding-bottom: 100%;
+     margin: 0 auto;
+     width: 100%;
+ }
+ #CanvasProcessor{
+     position: absolute;
+     top: 0;
+     left: 0;
+     width: 100%;
+     height: 100%;
+ }
+ #CanvasProcessorOpera{
+     position: absolute;
+     top: 0;
+     left: 0;
+     width: 100%;
+     height: 100%;
+     z-index: 9999;
+ }
+    #CanvasProcessor canvas{
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
 </style>
 <body>
-<canvas id="CanvasProcessor" width="600" height="600"></canvas>
-<ul>
-
-</ul>
-<input id="inputFile" type="file" onchange="selectFile(this)">
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">内容区<span id="console"></span></h3>
+        </div>
+        <div class="panel-body">
+            <div class="processor-out">
+                    <div id="CanvasProcessor"></div>
+                    <div id="CanvasProcessorOpera"></div>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">图层预览</h3>
+        </div>
+        <div class="panel-body">
+            <div class="row" id="layerList">
+            </div>
+        </div>
+    </div>
+    <input id="inputFile" type="file" onchange="selectFile(this)">
+</div>
+<script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+<script src="hammer.min.js"></script>
 <script src="../dist/bundle.js"></script>
 <script>
     var canva,canvasProcessorObj;
+    var curLayer,curImageTransform;
     window.onload=function(){
         canva = document.getElementById('CanvasProcessor');
         canvasProcessorObj = new CanvasProcessor.Processor(canva);
+        addLayerMoveEvent();
     };
 
     function selectFile(input){
         readAsDataURL(input,function(path){
             var im = new Image();
             im.onload=function(){
-                var imageLayer = new CanvasProcessor.ImageLayer(im,{width:canva.width,height:canva.height});
+                var imageLayer = new CanvasProcessor.ImageLayer(im,{width:600,height:600});
                 canvasProcessorObj.addLayer(imageLayer);
                 canvasProcessorObj.render();
+                addPreImg(imageLayer);
+                selectLayer(imageLayer.id)
             };
             im.src=path;
         })
@@ -46,6 +98,61 @@
         reader.onload = function(e){
             cb&&cb(this.result);
         }
+    }
+
+    function addPreImg(layer){
+        var html = '<div class="col-xs-3 col-md-2">'+
+            '<a href="javascript:selectLayer('+layer.id+')" class="thumbnail" id="layer'+layer.id+'">'+
+            '<img src="'+layer.canvas.toDataURL('png',.3)+'" alt="'+layer.name+'">'+
+            '</a>'+
+            '</div>'
+        $("#layerList").append(html)
+    }
+
+    function selectLayer(id){
+        curLayer = canvasProcessorObj.layerMap[id];
+        curImageTransform = new CanvasProcessor.ImageTransform(curLayer);
+    }
+    var hammertime;
+    function addLayerMoveEvent(){
+        hammertime = new Hammer(document.getElementById('CanvasProcessorOpera'),{domEvents:true});
+        hammertime.get('pinch').set({ enable: true });
+        var tmpPoint = {x:0,y:0};
+
+        hammertime.on('panstart', function(ev) {
+            tmpPoint = {x:ev.deltaX,y:ev.deltaY};
+        });
+        hammertime.on('panend', function(ev) {
+            tmpPoint = null;
+        });
+        hammertime.on('pancancal', function(ev) {
+            tmpPoint = null;
+        });
+        hammertime.on('panmove', function(ev) {
+            if(!tmpPoint) return;
+            var diffX = ev.deltaX-tmpPoint.x;
+            var diffY = ev.deltaY-tmpPoint.y;
+            tmpPoint = {x:ev.deltaX,y:ev.deltaY};
+            if(curImageTransform){
+                curImageTransform.move(diffX,diffY);
+            }
+        });
+
+        var tmpSizeByPinch={width:0,height:0};
+        hammertime.on('pinchstart', function(ev) {
+            tmpSizeByPinch={width:curLayer.imageWidth,height:curLayer.imageHeight};
+        });
+        hammertime.on('pinch', function(ev) {
+            var scale = ev.scale;
+            $("#console").text(scale);
+            if(curImageTransform){
+                curImageTransform.scaleToByLayerPoint(tmpSizeByPinch.width*scale,tmpSizeByPinch.height*scale,300,300);
+            }
+        });
+
+        document.getElementById('CanvasProcessorOpera').addEventListener('touchstart',function(ev){
+            ev.preventDefault();
+        })
     }
 </script>
 </body>
