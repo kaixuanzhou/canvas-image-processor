@@ -4,13 +4,14 @@
 import Service from './service/index.es6';
 
 import Processor from './processorCore.es6';
-import {Layer,ImageLayer} from './module/layer/index.es6';
+import {Layer,ImageLayer,RasterizeLayer} from './module/layer/index.es6';
 import ImageTransform from './module/image/ImageTransform.es6';
+import RasterizeLayerTransform from './module/rasterize/RasterizeLayerTransform.es6';
 
 /**
  * 核心代码
  *
  */
 export {
-    Service,Processor,Layer,ImageLayer,ImageTransform
+    Service,Processor,Layer,ImageLayer,RasterizeLayer,ImageTransform,RasterizeLayerTransform
 }

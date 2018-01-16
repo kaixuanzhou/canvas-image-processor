@@ -15,6 +15,11 @@ export default class Layer {
     height;
     contentArea={};//内容区域、包括超出画布范围的内容
     //配置参数默认值
+    defaultParams = {
+        name:'',
+        width:0,
+        height:0,
+    };
 
 
     /**
@@ -23,16 +28,12 @@ export default class Layer {
      * @param height
      */
     constructor(param){
-        let defaultParams = {
-            name:'',
-            width:0,
-            height:0,
-        };
-        Object.assign(defaultParams,param);
+
+        Object.assign(this.defaultParams,param);
         this.canvas = document.createElement('canvas');
 
-        this.width=defaultParams.width;
-        this.height=defaultParams.height;
+        this.width=this.defaultParams.width;
+        this.height=this.defaultParams.height;
         this.canvas.width = this.width;
         this.canvas.height = this.height;
         this.ctx = this.canvas.getContext('2d');
@@ -42,7 +43,12 @@ export default class Layer {
             width:this.canvas.width,
             height:this.canvas.height
         };
-        this.id = layerIdCount++;
+        if(param.id){
+            this.id = id;
+        }else{
+            this.id = layerIdCount++;
+            this.defaultParams.id=this.id;
+        }
     }
 
 

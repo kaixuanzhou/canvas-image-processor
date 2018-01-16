@@ -15,7 +15,7 @@
      margin: 0 auto;
      width: 100%;
  }
- #CanvasProcessor{
+ #CanvasProcessorDom{
      position: absolute;
      top: 0;
      left: 0;
@@ -44,7 +44,7 @@
         </div>
         <div class="panel-body">
             <div class="processor-out">
-                    <div id="CanvasProcessor"></div>
+                    <div id="CanvasProcessorDom"></div>
                     <div id="CanvasProcessorOpera"></div>
             </div>
         </div>
@@ -59,6 +59,7 @@
         </div>
     </div>
     <input id="inputFile" type="file" onchange="selectFile(this)">
+    <button onclick="toRasterizeLayer()">转为栅格图层</button>
 </div>
 <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
 <script src="hammer.min.js"></script>
@@ -67,11 +68,16 @@
     var canva,canvasProcessorObj;
     var curLayer,curImageTransform;
     window.onload=function(){
-        canva = document.getElementById('CanvasProcessor');
+        canva = document.getElementById('CanvasProcessorDom');
         canvasProcessorObj = new CanvasProcessor.Processor(canva);
         addLayerMoveEvent();
     };
 
+    function toRasterizeLayer(){
+        var rasterizeLayer = CanvasProcessor.RasterizeLayer.parse(curLayer);
+        canvasProcessorObj.updateLayer(curLayer.id,rasterizeLayer);
+        selectLayer(curLayer.id)
+    }
     function selectFile(input){
         readAsDataURL(input,function(path){
             var im = new Image();
@@ -111,7 +117,11 @@
 
     function selectLayer(id){
         curLayer = canvasProcessorObj.layerMap[id];
-        curImageTransform = new CanvasProcessor.ImageTransform(curLayer);
+        if(curLayer instanceof CanvasProcessor.ImageLayer){
+            curImageTransform = new CanvasProcessor.ImageTransform(curLayer);
+        }else if(curLayer instanceof CanvasProcessor.RasterizeLayer){
+            curImageTransform = new CanvasProcessor.RasterizeLayerTransform(curLayer);
+        }
     }
     var hammertime;
     function addLayerMoveEvent(){
@@ -138,15 +148,18 @@
             }
         });
 
-        var tmpSizeByPinch={width:0,height:0};
+        var tmpScale=1;
         hammertime.on('pinchstart', function(ev) {
-            tmpSizeByPinch={width:curLayer.imageWidth,height:curLayer.imageHeight};
+            tmpScale=1;
         });
-        hammertime.on('pinch', function(ev) {
-            var scale = ev.scale;
+        hammertime.on('pinchmove', function(ev) {
+            var scale = ev.scale/tmpScale;
+            tmpScale=ev.scale;
             $("#console").text(scale);
-            if(curImageTransform){
-                curImageTransform.scaleToByLayerPoint(tmpSizeByPinch.width*scale,tmpSizeByPinch.height*scale,300,300);
+            if(curImageTransform instanceof CanvasProcessor.ImageTransform){
+                curImageTransform.scaleToByLayerPoint(curLayer.imageWidth*scale,curLayer.imageHeight*scale,300,300);
+            }else if(curImageTransform instanceof CanvasProcessor.RasterizeLayerTransform){
+                curImageTransform.scaleByPoint(scale,scale,300,300);
             }
         });
 

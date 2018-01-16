@@ -90,32 +90,31 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var layerIdCount = 0;
 
 var Layer = function () {
-    //内容区域、包括超出画布范围的内容
-    //配置参数默认值
-
 
     /**
      * 宽高
      * @param width
      * @param height
      */
+    //canvas context
     function Layer(param) {
         _classCallCheck(this, Layer);
 
         this.canvas = null;
         this.ctx = null;
         this.contentArea = {};
-
-        var defaultParams = {
+        this.defaultParams = {
             name: '',
             width: 0,
             height: 0
         };
-        Object.assign(defaultParams, param);
+
+
+        Object.assign(this.defaultParams, param);
         this.canvas = document.createElement('canvas');
 
-        this.width = defaultParams.width;
-        this.height = defaultParams.height;
+        this.width = this.defaultParams.width;
+        this.height = this.defaultParams.height;
         this.canvas.width = this.width;
         this.canvas.height = this.height;
         this.ctx = this.canvas.getContext('2d');
@@ -125,13 +124,19 @@ var Layer = function () {
             width: this.canvas.width,
             height: this.canvas.height
         };
-        this.id = layerIdCount++;
+        if (param.id) {
+            this.id = id;
+        } else {
+            this.id = layerIdCount++;
+            this.defaultParams.id = this.id;
+        }
     }
 
     /**
      * 获取可视区域内的ImageData
      */
-    //canvas context
+    //内容区域、包括超出画布范围的内容
+    //配置参数默认值
 
 
     _createClass(Layer, [{
@@ -156,7 +161,7 @@ exports.default = Layer;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.ImageTransform = exports.ImageLayer = exports.Layer = exports.Processor = exports.Service = undefined;
+exports.RasterizeLayerTransform = exports.ImageTransform = exports.RasterizeLayer = exports.ImageLayer = exports.Layer = exports.Processor = exports.Service = undefined;
 
 var _index = __webpack_require__(2);
 
@@ -168,9 +173,13 @@ var _processorCore2 = _interopRequireDefault(_processorCore);
 
 var _index3 = __webpack_require__(7);
 
-var _ImageTransform = __webpack_require__(9);
+var _ImageTransform = __webpack_require__(10);
 
 var _ImageTransform2 = _interopRequireDefault(_ImageTransform);
+
+var _RasterizeLayerTransform = __webpack_require__(11);
+
+var _RasterizeLayerTransform2 = _interopRequireDefault(_RasterizeLayerTransform);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -178,14 +187,15 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * 核心代码
  *
  */
-/**
- * Created by 80011690 on 2018/1/5.
- */
 exports.Service = _index2.default;
 exports.Processor = _processorCore2.default;
 exports.Layer = _index3.Layer;
 exports.ImageLayer = _index3.ImageLayer;
+exports.RasterizeLayer = _index3.RasterizeLayer;
 exports.ImageTransform = _ImageTransform2.default;
+exports.RasterizeLayerTransform = _RasterizeLayerTransform2.default; /**
+                                                                      * Created by 80011690 on 2018/1/5.
+                                                                      */
 
 /***/ }),
 /* 2 */
@@ -2990,6 +3000,9 @@ var Processor = function () {
         this.layerList = [];
         this.layerMap = {};
 
+        if (Processor.instance) {
+            return Processor.instance;
+        }
         var defaultParams = {
             width: 0,
             height: 0
@@ -2998,6 +3011,7 @@ var Processor = function () {
         this.container = dom;
         this.width = _args.width;
         this.height = _args.height;
+        Processor.instance = this;
     }
 
     /**
@@ -3026,10 +3040,22 @@ var Processor = function () {
     }, {
         key: 'removeLayer',
         value: function removeLayer(id) {
-            delete this.layerMap[id];
             var deleteIndex = this.layerList.indexOf(id);
-            var layer = this.layerList.splice(deleteIndex, 1);
-            this.container.removeChild(layer.canvas);
+            this.layerList.splice(deleteIndex, 1);
+            this.container.removeChild(this.layerMap[id].canvas);
+            delete this.layerMap[id];
+        }
+    }, {
+        key: 'updateLayer',
+        value: function updateLayer(id, layer) {
+            if (layer instanceof _Layer2.default) {
+                var deleteIndex = this.layerList.indexOf(id);
+                this.layerList.splice(deleteIndex, 1, layer);
+                this.container.removeChild(this.layerMap[id].canvas);
+                layer.canvas.style.zIndex = deleteIndex + 1;
+                this.layerMap[id] = layer; //修改字典里的对象
+                this.container.appendChild(layer.canvas);
+            }
         }
 
         /**
@@ -3077,6 +3103,8 @@ var Processor = function () {
 
 exports.default = Processor;
 
+Processor.instance = null;
+
 /***/ }),
 /* 7 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -3087,7 +3115,7 @@ exports.default = Processor;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.ImageLayer = exports.Layer = undefined;
+exports.RasterizeLayer = exports.ImageLayer = exports.Layer = undefined;
 
 var _Layer = __webpack_require__(0);
 
@@ -3097,10 +3125,15 @@ var _ImageLayer = __webpack_require__(8);
 
 var _ImageLayer2 = _interopRequireDefault(_ImageLayer);
 
+var _RasterizeLayer = __webpack_require__(9);
+
+var _RasterizeLayer2 = _interopRequireDefault(_RasterizeLayer);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.Layer = _Layer2.default;
 exports.ImageLayer = _ImageLayer2.default;
+exports.RasterizeLayer = _RasterizeLayer2.default;
 
 /***/ }),
 /* 8 */
@@ -3165,6 +3198,83 @@ exports.default = ImageLayer;
 
 /***/ }),
 /* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _Layer2 = __webpack_require__(0);
+
+var _Layer3 = _interopRequireDefault(_Layer2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var RasterizeLayer = function (_Layer) {
+    _inherits(RasterizeLayer, _Layer);
+
+    _createClass(RasterizeLayer, null, [{
+        key: 'parse',
+        value: function parse(layer) {
+            return new RasterizeLayer(layer.canvas, layer.defaultParams);
+        }
+    }]);
+
+    function RasterizeLayer(sourceImageDataUrl) {
+        var _ref;
+
+        _classCallCheck(this, RasterizeLayer);
+
+        for (var _len = arguments.length, param = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+            param[_key - 1] = arguments[_key];
+        }
+
+        var _this = _possibleConstructorReturn(this, (_ref = RasterizeLayer.__proto__ || Object.getPrototypeOf(RasterizeLayer)).call.apply(_ref, [this].concat(param)));
+
+        _this.translateX = 0;
+        _this.translateY = 0;
+
+        _this.sourceImageDataUrl = sourceImageDataUrl;
+        _this.update();
+        return _this;
+    }
+
+    _createClass(RasterizeLayer, [{
+        key: 'translate',
+        value: function translate(x, y) {
+            this.translateX += x;
+            this.translateY += y;
+            this.ctx.translate(x, y);
+        }
+    }, {
+        key: 'update',
+        value: function update() {
+            this.ctx.save();
+            this.ctx.resetTransform();
+            this.ctx.clearRect(0, 0, this.width, this.height);
+            this.ctx.restore();
+            this.ctx.drawImage(this.sourceImageDataUrl, 0, 0);
+        }
+    }]);
+
+    return RasterizeLayer;
+}(_Layer3.default);
+
+exports.default = RasterizeLayer;
+
+/***/ }),
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3246,6 +3356,111 @@ var ImageTransform = function () {
 }();
 
 exports.default = ImageTransform;
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * 栅格化图层变形
+ */
+var RasterizeLayerTransform = function () {
+    function RasterizeLayerTransform(rasterizeLayer) {
+        _classCallCheck(this, RasterizeLayerTransform);
+
+        this.scaleWidth = 1;
+        this.scaleHeight = 1;
+
+        this.rasterizeLayer = rasterizeLayer;
+    }
+
+    _createClass(RasterizeLayerTransform, [{
+        key: 'move',
+        value: function move(x, y) {
+            this.rasterizeLayer.translate(x / this.scaleWidth, y / this.scaleHeight);
+            this.rasterizeLayer.update();
+        }
+    }, {
+        key: 'scale',
+        value: function scale(scaleWidth, scaleHeight) {
+            this.rasterizeLayer.ctx.save();
+            this.rasterizeLayer.ctx.scale(scaleWidth, scaleHeight);
+            this.rasterizeLayer.update();
+            this.rasterizeLayer.ctx.restore();
+        }
+    }, {
+        key: 'scaleTo',
+        value: function scaleTo(width, height) {
+            console.log('to do');
+        }
+
+        /**
+         * 以图片中某点的位置为基准进行缩放
+         */
+
+    }, {
+        key: 'scaleByPoint',
+        value: function scaleByPoint(scaleWidth, scaleHeight, x, y) {
+            this.scaleWidth *= scaleWidth;
+            this.scaleHeight *= scaleHeight;
+            this.rasterizeLayer.ctx.translate(x * (1 - scaleWidth), y * (1 - scaleHeight));
+            this.rasterizeLayer.ctx.scale(scaleWidth, scaleHeight);
+            this.rasterizeLayer.update();
+        }
+    }, {
+        key: 'previewMode',
+        value: function previewMode(fn) {
+            this.rasterizeLayer.ctx.save();
+            if (fn) {
+                fn = fn.bind(this);
+
+                for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+                    args[_key - 1] = arguments[_key];
+                }
+
+                fn.call(this, args);
+            }
+            this.rasterizeLayer.ctx.restore();
+        }
+
+        /**
+         * 以图层中的某点的位置为基准进行缩放
+         * @param width
+         * @param height
+         * @param x 
+         * @param y
+         */
+
+    }, {
+        key: 'scaleToByLayerPoint',
+        value: function scaleToByLayerPoint(width, height, x, y) {
+            console.log('to do');
+        }
+    }, {
+        key: 'rotate',
+        value: function rotate() {
+            console.log('to do');
+        }
+    }, {
+        key: 'commit',
+        value: function commit() {}
+    }]);
+
+    return RasterizeLayerTransform;
+}();
+
+exports.default = RasterizeLayerTransform;
 
 /***/ })
 /******/ ]);

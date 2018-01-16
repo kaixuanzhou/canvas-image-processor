@@ -7,6 +7,9 @@ export default class Processor{
     layerList=[];//图层顺序列表
     layerMap={};//图层hash
     constructor(dom,args){
+        if(Processor.instance){
+            return Processor.instance;
+        }
         let defaultParams = {
             width:0,
             height:0,
@@ -15,7 +18,9 @@ export default class Processor{
         this.container = dom;
         this.width=_args.width;
         this.height=_args.height;
+        Processor.instance = this;
     }
+
 
     /**
      * 添加层
@@ -30,15 +35,27 @@ export default class Processor{
         }
     }
 
+
     /**
      * 移除层
      * @param id
      */
     removeLayer(id){
-        delete this.layerMap[id];
         let deleteIndex = this.layerList.indexOf(id);
-        let layer = this.layerList.splice(deleteIndex,1);
-        this.container.removeChild(layer.canvas);
+        this.layerList.splice(deleteIndex,1);
+        this.container.removeChild(this.layerMap[id].canvas);
+        delete this.layerMap[id];
+    }
+
+    updateLayer(id,layer){
+        if(layer instanceof Layer){
+            let deleteIndex = this.layerList.indexOf(id);
+            this.layerList.splice(deleteIndex,1,layer);
+            this.container.removeChild(this.layerMap[id].canvas);
+            layer.canvas.style.zIndex = deleteIndex+1;
+            this.layerMap[id] = layer;//修改字典里的对象
+            this.container.appendChild(layer.canvas);
+        }
     }
 
     /**
@@ -71,3 +88,4 @@ export default class Processor{
         // })
     }
 }
+Processor.instance = null;
