@@ -35,14 +35,6 @@
         top: 0;
         left: 0;
     }
-    #CanvasProcessorUI{
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 999;
-    }
 </style>
 <body>
 <div class="container">
@@ -52,7 +44,6 @@
         </div>
         <div class="panel-body">
             <div class="processor-out">
-                    <canvas id="CanvasProcessorUI" width="600" height="600"></canvas>
                     <div id="CanvasProcessorDom"></div>
                     <div id="CanvasProcessorOpera"></div>
             </div>
@@ -72,8 +63,6 @@
     </p>
     <p>
         <button class="btn btn-default btn-lg" onclick="toRasterizeLayer()">转为栅格图层</button>
-        <button class="btn btn-default btn-lg" onclick="startSelectedArea()">开启选区工具</button>
-        <button class="btn btn-default btn-lg" onclick="clip()">裁切选区</button>
     </p>
 </div>
 <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
@@ -84,14 +73,8 @@
 <script>
     var canva,canvasProcessorObj;
     var curLayer,curImageTransform;
-    var uiCanvas,uiCtx;//CanvasProcessorUI  canva.getBoundingClientRect()
-    var selectedArea = new CanvasProcessor.SelectedArea();
-    var selectedAreaService = new CanvasProcessor.SelectedAreaService();
     window.onload=function(){
         canva = document.getElementById('CanvasProcessorDom');
-        uiCanvas = document.getElementById('CanvasProcessorUI');
-        uiCtx = uiCanvas.getContext('2d');
-        uiCtx.fillStyle = 'rgba(44,228,255,1)';
         canvasProcessorObj = new CanvasProcessor.Processor(canva);
         addLayerMoveEvent();
     };
@@ -148,7 +131,6 @@
     }
     var hammertime;
     function addLayerMoveEvent(){
-        hammertime&&hammertime.destroy();
         hammertime = new Hammer(document.getElementById('CanvasProcessorOpera'),{domEvents:true});
         hammertime.get('pinch').set({ enable: true });
         var tmpPoint = {x:0,y:0};
@@ -186,55 +168,11 @@
                 curImageTransform.scaleByPoint(scale,scale,300,300);
             }
         });
+
+        document.getElementById('CanvasProcessorOpera').addEventListener('touchstart',function(ev){
+            ev.preventDefault();
+        })
     }
-
-    
-    function startSelectedArea(){
-            hammertime&&hammertime.destroy();
-            hammertime = new Hammer(document.getElementById('CanvasProcessorOpera'),{domEvents:true});
-            var selectedPoint = [];
-            hammertime.on('panstart', function (ev) {
-                var p = getXY(ev);
-                selectedPoint = [p];
-                uiCtx.beginPath();
-                uiCtx.moveTo(p.x,p.y);
-            });
-            hammertime.on('panend', function (ev) {
-                uiCtx.closePath();
-                uiCtx.stroke();
-                uiCtx.fill();
-                selectedArea.addByPoints(selectedPoint);                
-            });
-            hammertime.on('pancancal', function (ev) {
-                uiCtx.closePath();
-                uiCtx.stroke();
-                uiCtx.fill();
-                selectedArea.addByPoints(selectedPoint);    
-            });
-            hammertime.on('panmove', function (ev) {
-                var p = getXY(ev);
-                selectedPoint.push(p);
-                uiCtx.lineTo(p.x,p.y);
-                uiCtx.stroke();
-            });
-
-            function getXY(ev){
-                var uiCanvasBoundingRect = uiCanvas.getBoundingClientRect();
-                var bl = uiCanvas.width/uiCanvas.offsetWidth;
-                return {
-                    x:(ev.srcEvent.clientX-uiCanvasBoundingRect.x)*bl,
-                    y:(ev.srcEvent.clientY-uiCanvasBoundingRect.y)*bl
-                };
-            }
-        }
-
-
-        function clip(){
-            CanvasProcessor.SelectedAreaService.clip(curLayer,selectedArea);
-        }
-    document.getElementById('CanvasProcessorOpera').addEventListener('touchstart',function(ev){
-        ev.preventDefault();
-    })
 </script>
 </body>
 </html>

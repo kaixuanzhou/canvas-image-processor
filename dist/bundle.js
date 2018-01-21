@@ -161,7 +161,7 @@ exports.default = Layer;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.RasterizeLayerTransform = exports.ImageTransform = exports.RasterizeLayer = exports.ImageLayer = exports.Layer = exports.Processor = exports.Service = undefined;
+exports.SelectedAreaService = exports.SelectedArea = exports.RasterizeLayerTransform = exports.ImageTransform = exports.RasterizeLayer = exports.ImageLayer = exports.Layer = exports.Processor = exports.Service = undefined;
 
 var _index = __webpack_require__(2);
 
@@ -181,6 +181,14 @@ var _RasterizeLayerTransform = __webpack_require__(11);
 
 var _RasterizeLayerTransform2 = _interopRequireDefault(_RasterizeLayerTransform);
 
+var _SelectedArea = __webpack_require__(12);
+
+var _SelectedArea2 = _interopRequireDefault(_SelectedArea);
+
+var _SelectedAreaService = __webpack_require__(13);
+
+var _SelectedAreaService2 = _interopRequireDefault(_SelectedAreaService);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
@@ -193,9 +201,11 @@ exports.Layer = _index3.Layer;
 exports.ImageLayer = _index3.ImageLayer;
 exports.RasterizeLayer = _index3.RasterizeLayer;
 exports.ImageTransform = _ImageTransform2.default;
-exports.RasterizeLayerTransform = _RasterizeLayerTransform2.default; /**
-                                                                      * Created by 80011690 on 2018/1/5.
-                                                                      */
+exports.RasterizeLayerTransform = _RasterizeLayerTransform2.default;
+exports.SelectedArea = _SelectedArea2.default;
+exports.SelectedAreaService = _SelectedAreaService2.default; /**
+                                                              * Created by 80011690 on 2018/1/5.
+                                                              */
 
 /***/ }),
 /* 2 */
@@ -3461,6 +3471,135 @@ var RasterizeLayerTransform = function () {
 }();
 
 exports.default = RasterizeLayerTransform;
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var style = [];
+
+var SelectedArea = function () {
+    function SelectedArea(pointArr) {
+        _classCallCheck(this, SelectedArea);
+
+        this.pattern = SelectedArea.PATTERN_ADD;
+
+        if (this.instance) {
+            return this.instance;
+        } else {
+            this.canvas = document.createElement('canvas');
+            this.canvas.width = 600;
+            this.canvas.height = 600;
+            document.getElementsByTagName('body')[0].appendChild(this.canvas);
+            this.ctx = this.canvas.getContext('2d');
+            this.checkPattern(this.pattern);
+            this.instance = this;
+        }
+    }
+
+    _createClass(SelectedArea, [{
+        key: 'addByPoints',
+        value: function addByPoints(arr) {
+            var _this = this;
+
+            arr.forEach(function (point, index) {
+                if (index === 1) {
+                    _this.ctx.beginPath();
+                    _this.ctx.moveTo(point.x, point.y);
+                } else {
+                    _this.ctx.lineTo(point.x, point.y);
+                }
+            });
+            this.ctx.closePath();
+            this.ctx.fill();
+        }
+    }, {
+        key: 'addByRect',
+        value: function addByRect(x, y, w, h) {
+            this.ctx.fillRect(x, y, w, h);
+        }
+    }, {
+        key: 'addByArc',
+        value: function addByArc(x, y, r) {
+            ctx.arc(x, y, r);
+            this.ctx.fill();
+        }
+    }, {
+        key: 'checkPattern',
+        value: function checkPattern(type) {
+            switch (type) {
+                case SelectedArea.PATTERN_ADD:
+                    this.ctx.fillStyle = 'rgba(0,0,0,1)';
+                    break;
+                case SelectedArea.PATTERN_REMOVE:
+                    this.ctx.fillStyle = 'rgba(255,255,255,0)';
+                    break;
+                default:
+
+            }
+        }
+    }]);
+
+    return SelectedArea;
+}();
+
+exports.default = SelectedArea;
+
+
+SelectedArea.PATTERN_ADD = 1; //添加选区
+SelectedArea.PATTERN_REMOVE = 2; //删除选区
+SelectedArea.PATTERN_AND = 3; //并集选区
+SelectedArea.PATTERN_RE = 4; //重制选区
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var SelectedAreaService = function () {
+    function SelectedAreaService() {
+        _classCallCheck(this, SelectedAreaService);
+    }
+
+    _createClass(SelectedAreaService, null, [{
+        key: 'clip',
+        value: function clip(layer, selectedArea) {
+            layer.ctx.globalCompositeOperation = 'destination-out';
+            // layer.ctx.fillRect(150,20,75,50);
+            // let imgobj = new Image();
+            // imgobj.src = selectedArea.canvas.toDataURL('png',1);
+            // imgobj.onload=function(){
+            //     layer.ctx.drawImage(imgobj,0,0);
+            // }
+            layer.ctx.drawImage(selectedArea.canvas, 0, 0);
+        }
+    }]);
+
+    return SelectedAreaService;
+}();
+
+exports.default = SelectedAreaService;
 
 /***/ })
 /******/ ]);
